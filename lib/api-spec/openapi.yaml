@@ -1,0 +1,871 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: 4Builder API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: providers
+    description: Provider directory operations
+  - name: reviews
+    description: Review operations
+  - name: subscriptions
+    description: Subscription and payment operations
+  - name: notifications
+    description: Notification operations
+  - name: locations
+    description: Location data operations
+  - name: users
+    description: User profile operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/send-otp:
+    post:
+      operationId: sendOtp
+      tags: [auth]
+      summary: Send OTP to phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOtpRequest"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpSentResult"
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [auth]
+      summary: Verify OTP and authenticate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpRequest"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /users/profile:
+    put:
+      operationId: updateProfile
+      tags: [users]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /providers:
+    get:
+      operationId: listProviders
+      tags: [providers]
+      summary: List providers in the directory
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/ProviderType"
+        - name: governorate
+          in: query
+          schema:
+            type: string
+        - name: neighborhood
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [top_rated, most_experienced, available]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderListResponse"
+    post:
+      operationId: createProvider
+      tags: [providers]
+      summary: Create provider profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProviderRequest"
+      responses:
+        "201":
+          description: Created provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+
+  /providers/stats:
+    get:
+      operationId: getProviderStats
+      tags: [providers]
+      summary: Get provider directory statistics
+      responses:
+        "200":
+          description: Directory stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderStats"
+
+  /providers/{providerId}:
+    get:
+      operationId: getProvider
+      tags: [providers]
+      summary: Get provider details
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Provider details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+    put:
+      operationId: updateProvider
+      tags: [providers]
+      summary: Update provider profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProviderRequest"
+      responses:
+        "200":
+          description: Updated provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+
+  /providers/{providerId}/reviews:
+    get:
+      operationId: getProviderReviews
+      tags: [reviews]
+      summary: Get reviews for a provider
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewListResponse"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review for a provider
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+      responses:
+        "201":
+          description: Created review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /subscriptions/plans:
+    get:
+      operationId: getSubscriptionPlans
+      tags: [subscriptions]
+      summary: Get available subscription plans
+      responses:
+        "200":
+          description: Subscription plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionPlansResponse"
+
+  /subscriptions/status:
+    get:
+      operationId: getSubscriptionStatus
+      tags: [subscriptions]
+      summary: Get current user subscription status
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/activate:
+    post:
+      operationId: activateSubscription
+      tags: [subscriptions]
+      summary: Activate subscription after payment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivateSubscriptionRequest"
+      responses:
+        "200":
+          description: Activated subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: Get user notifications
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationListResponse"
+
+  /notifications/{notificationId}/read:
+    put:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/{notificationId}:
+    delete:
+      operationId: dismissNotification
+      tags: [notifications]
+      summary: Dismiss a notification
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Dismissed
+
+  /locations/governorates:
+    get:
+      operationId: getGovernorates
+      tags: [locations]
+      summary: Get list of Iraqi governorates
+      responses:
+        "200":
+          description: Governorates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernoratesResponse"
+
+  /locations/neighborhoods:
+    get:
+      operationId: getNeighborhoods
+      tags: [locations]
+      summary: Get neighborhoods for a governorate
+      parameters:
+        - name: governorate
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Neighborhoods
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeighborhoodsResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    ProviderType:
+      type: string
+      enum: [contractor, craftsman, machinery]
+
+    SendOtpRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: Iraqi phone number (e.g. +9647700000000)
+      required: [phone]
+
+    OtpSentResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        expiresIn:
+          type: integer
+          description: Seconds until OTP expires
+      required: [success, expiresIn]
+
+    VerifyOtpRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+        otp:
+          type: string
+        role:
+          type: string
+          enum: [client, provider]
+          description: Required on first registration
+      required: [phone, otp]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        isNewUser:
+          type: boolean
+      required: [token, user, isNewUser]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [client, provider, admin]
+        name:
+          type: string
+        avatarUrl:
+          type: string
+        governorate:
+          type: string
+        neighborhood:
+          type: string
+        isVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        provider:
+          $ref: "#/components/schemas/Provider"
+      required: [id, phone, role, isVerified, createdAt]
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        avatarUrl:
+          type: string
+        governorate:
+          type: string
+        neighborhood:
+          type: string
+
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        type:
+          $ref: "#/components/schemas/ProviderType"
+        name:
+          type: string
+        description:
+          type: string
+        governorate:
+          type: string
+        neighborhood:
+          type: string
+        phone:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+        portfolioImages:
+          type: array
+          items:
+            type: string
+        avgRating:
+          type: number
+        totalReviews:
+          type: integer
+        totalViews:
+          type: integer
+        isActive:
+          type: boolean
+        subscriptionPlan:
+          type: string
+          enum: [none, silver, gold]
+        subscriptionExpiresAt:
+          type: string
+          format: date-time
+        machinerySpecs:
+          $ref: "#/components/schemas/MachinerySpecs"
+        craftDetails:
+          $ref: "#/components/schemas/CraftDetails"
+        contractorDetails:
+          $ref: "#/components/schemas/ContractorDetails"
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, userId, type, name, governorate, isActive, subscriptionPlan, createdAt]
+
+    MachinerySpecs:
+      type: object
+      properties:
+        model:
+          type: string
+        capacity:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: string
+        condition:
+          type: string
+
+    CraftDetails:
+      type: object
+      properties:
+        subcategories:
+          type: array
+          items:
+            type: string
+        dailyRate:
+          type: number
+        hourlyRate:
+          type: number
+        isAvailable:
+          type: boolean
+
+    ContractorDetails:
+      type: object
+      properties:
+        registrationNumber:
+          type: string
+        establishedYear:
+          type: integer
+        projectTypes:
+          type: array
+          items:
+            type: string
+
+    CreateProviderRequest:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/ProviderType"
+        name:
+          type: string
+        description:
+          type: string
+        governorate:
+          type: string
+        neighborhood:
+          type: string
+        phone:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+        portfolioImages:
+          type: array
+          items:
+            type: string
+        machinerySpecs:
+          $ref: "#/components/schemas/MachinerySpecs"
+        craftDetails:
+          $ref: "#/components/schemas/CraftDetails"
+        contractorDetails:
+          $ref: "#/components/schemas/ContractorDetails"
+      required: [type, name, governorate, phone]
+
+    UpdateProviderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        governorate:
+          type: string
+        neighborhood:
+          type: string
+        phone:
+          type: string
+        specialties:
+          type: array
+          items:
+            type: string
+        portfolioImages:
+          type: array
+          items:
+            type: string
+        machinerySpecs:
+          $ref: "#/components/schemas/MachinerySpecs"
+        craftDetails:
+          $ref: "#/components/schemas/CraftDetails"
+        contractorDetails:
+          $ref: "#/components/schemas/ContractorDetails"
+
+    ProviderListResponse:
+      type: object
+      properties:
+        providers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Provider"
+        total:
+          type: integer
+      required: [providers, total]
+
+    ProviderStats:
+      type: object
+      properties:
+        totalContractors:
+          type: integer
+        totalCraftsmen:
+          type: integer
+        totalMachinery:
+          type: integer
+        totalActive:
+          type: integer
+        governorateBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              governorate:
+                type: string
+              count:
+                type: integer
+            required: [governorate, count]
+      required: [totalContractors, totalCraftsmen, totalMachinery, totalActive, governorateBreakdown]
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        providerId:
+          type: string
+        clientId:
+          type: string
+        clientName:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, providerId, clientId, rating, createdAt]
+
+    CreateReviewRequest:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          type: string
+      required: [rating]
+
+    ReviewListResponse:
+      type: object
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/Review"
+        avgRating:
+          type: number
+        total:
+          type: integer
+      required: [reviews, avgRating, total]
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: [silver, gold]
+        name:
+          type: string
+        nameAr:
+          type: string
+        priceMonthly:
+          type: number
+        features:
+          type: array
+          items:
+            type: string
+        featuresAr:
+          type: array
+          items:
+            type: string
+      required: [id, name, nameAr, priceMonthly, features, featuresAr]
+
+    SubscriptionPlansResponse:
+      type: object
+      properties:
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionPlan"
+      required: [plans]
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        plan:
+          type: string
+          enum: [none, silver, gold]
+        status:
+          type: string
+          enum: [active, expired, none]
+        expiresAt:
+          type: string
+          format: date-time
+        paymentMethod:
+          type: string
+          enum: [fib, zain_cash, fastpay]
+        activatedAt:
+          type: string
+          format: date-time
+      required: [id, userId, plan, status]
+
+    ActivateSubscriptionRequest:
+      type: object
+      properties:
+        plan:
+          type: string
+          enum: [silver, gold]
+        paymentMethod:
+          type: string
+          enum: [fib, zain_cash, fastpay]
+        transactionId:
+          type: string
+      required: [plan, paymentMethod, transactionId]
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        type:
+          type: string
+          enum: [payment, review, system, subscription]
+        title:
+          type: string
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, userId, type, title, message, isRead, createdAt]
+
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+        unreadCount:
+          type: integer
+      required: [notifications, unreadCount]
+
+    GovernoratesResponse:
+      type: object
+      properties:
+        governorates:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              nameAr:
+                type: string
+            required: [id, name, nameAr]
+      required: [governorates]
+
+    NeighborhoodsResponse:
+      type: object
+      properties:
+        neighborhoods:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              nameAr:
+                type: string
+              governorateId:
+                type: string
+            required: [id, name, nameAr, governorateId]
+      required: [neighborhoods]

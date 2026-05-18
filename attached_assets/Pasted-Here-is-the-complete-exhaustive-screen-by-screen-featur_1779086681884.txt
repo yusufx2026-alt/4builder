@@ -1,0 +1,81 @@
+Here is the complete, exhaustive screen-by-screen feature blueprint for **4Builder**, mapped to your exact screen flow and designed using your premium color palette:
+ * **Dark Mode:** Background is pure black (#000000), with structural borders and deep UI elements styled in your signature Deep Navy (#1A2332).
+ * **Light Mode:** Background is crisp light grey (#F4F6F9), with all foreground text, iconography, and primary bars styled in Deep Navy (#1A2332) for maximum daylight readability.
+## 📱 Mobile App Screens (React Native Expo + TypeScript)
+### 1. Splash Screen
+ * **Details:** The clean, high-impact initial loading state when **4Builder** launches.
+ * **Features:**
+   * Pure black canvas (#000000) with a central Three.js canvas element.
+   * A high-performance 3D abstract geometric wireframe construction structure rotating smoothly on a 360-degree axis.
+   * The 3D model is textured dynamically using your Deep Navy color (#1A2332) with a metallic, reflective finish.
+   * **Anime.js Interaction:** Once the backend initialization resolves, the 3D structure scales downward and shifts cleanly up to become the animated header for the next screen.
+### 2. Onboarding Screen (3 Slides)
+ * **Details:** A premium, interactive walkthrough introducing the application's value proposition to new Iraqi users.
+ * **Features:**
+   * **Slide 1 (Discover Contractors):** Features a stylized 3D modern building model spinning smoothly. Text outlines finding premium engineering and contracting firms instantly.
+   * **Slide 2 (Hire Skilled Craftsmen):** The 3D model shifts via Anime.js morphing into a collection of sleek construction tools. Text outlines direct access to trusted local labor.
+   * **Slide 3 (Rent Heavy Caterpillar Machinery):** The model fluidly morphs into a low-poly heavy industrial excavator track. Text highlights booking heavy equipment instantly.
+   * **Navigation Component:** A horizontal progress dot indicator styled in Deep Navy (#1A2332) that stretches dynamically using fluid kinetic physics (Anime.js) as the user swipes through pages.
+### 3. Register Auth Screen (Phone OTP + Role Selection)
+ * **Details:** The type-safe account creation entry point designed to onboard new clients or providers instantly.
+ * **Features:**
+   * Clean input architecture utilizing an explicit Iraqi country code prefix selection (+964) with native validation for AsiaCell, Zain, and Korek networks.
+   * **Role Selector Cards:** Two large, responsive touch targets driven by Anime.js. Tapping a card fires an elastic spring animation:
+     * *Client Card:* Configured for individuals or companies looking to browse.
+     * *Provider Card:* Instantly expands a nested, typed form capture to upload profile names, select primary specialties, and attach quick portfolio image assets directly to **AWS S3** with an inline animated file upload progress bar.
+   * A primary action submission button that shifts into a sleek loading spinner during data transmission.
+### 4. Login Screen (Phone OTP Verification)
+ * **Details:** The streamlined returning user gateway, removing password overhead in favor of secure temporary tokens.
+ * **Features:**
+   * A minimal phone number entry field with automatic focal shifting.
+   * **OTP Native Code Grid:** A type-safe 6-digit verification grid. As each number is typed via the native keyboard, the corresponding block changes border colors.
+   * In Dark Mode, the active box glows with a Deep Navy (#1A2332) halo; in Light Mode, the active box fills entirely with Deep Navy (#1A2332), turning the text crisp white.
+   * A countdown timer utility with a built-in "Resend Code" trigger that fades into visibility once the timer expires.
+### 5. Home / Explore Screen
+ * **Details:** The central command center of **4Builder**, engineered for instant, text-based regional discovery without heavy map dependencies.
+ * **Features:**
+   * **Top Navigation Bar:** Houses a typed regional dropdown filter (Governorate -> Neighborhood) for instant directory scoping, paired with a Notification bell icon showing live badge states.
+   * **Interactive 3D Hub Canvas:** A prominent screen section displaying the Three.js interactive rotating models based on the selected tier.
+   * **Fast Services Segment (3 Primary Cards):** The core layout structure featuring three distinct, beautifully designed high-contrast cards:
+     1. *Contractor Directory Card:* Deep Navy branding accents, routing users straight to the corporate builder registries.
+     2. *Craftsman Directory Card:* Designed for immediate access to specialized physical trades.
+     3. *Heavy Machinery (Caterpillar) Card:* High-impact industrial design language focusing on excavators, bulldozers, and heavy fleet access.
+   * **Anime.js Micro-Animations:** Swiping or tapping these cards triggers a kinetic slide-and-reveal effect that smoothly transitions the view stack into the targeted directory results.
+### 6. Notification Screen
+ * **Details:** A clean, chronologically organized feed tracking critical updates, subscription alerts, and profile interactions.
+ * **Features:**
+   * A type-safe list utilizing structural item cards separated by clean lines (#1A2332 in dark mode).
+   * Categorized alerts using distinct iconography: a coin/shield icon for successful payment billing transactions via FIB/Zain Cash, and a star icon for newly received user reviews.
+   * Swiping a notification card left fires a smooth Anime.js slide animation revealing a "Dismiss" action target.
+### 7. Profile Screen
+ * **Details:** The user's personalized account overview, adapting dynamically based on whether they are a client browsing or a premium listed provider.
+ * **Features:**
+   * **Header Section:** Displays a high-resolution avatar image pulled from AWS S3, a verified account status badge, and user location markers.
+   * **Metrics Grid (For Providers):** Displays live aggregated statistics, including their overall review rating score (e.g., ⭐ 4.9) and total account views.
+   * **Action Hub:** A vertical list of navigation items leading directly to Edit Profile, Subscription Status (for providers to manage their Zain Cash/FIB billing cycles), and App Settings.
+### 8. Settings Screen
+ * **Details:** The central application control panel managing configuration parameters, device states, and account status.
+ * **Features:**
+   * **Theme Toggle Switch:** A custom-animated switch component powered by Anime.js that fluidly interpolates app-wide colors between Dark Mode (Pure Black) and Light Mode (Deep Navy foregrounds).
+   * **Language Selection Utility:** High-contrast toggles to instantly change the runtime type configurations between Arabic, Kurdish (Sorani), and English.
+   * Standardized text links for Terms of Service, Privacy policies, and a highly accessible, distinct "Sign Out" button.
+### 9. Details Screens (Three Tailored Contextual Views)
+ * **Details:** The final directory listing profiles where clients evaluate skills and directly contact providers.
+ * **Features for each specialized view:**
+   * **A. Contractor Details Screen:** Focuses heavily on institutional credibility. Features corporate registration data fields, an expansive AWS S3-hosted project portfolio photo gallery grid that opens into a full-screen swipeable modal, and user review logs.
+   * **B. Craftsman Details Screen:** Built for quick personal assessment. Displays specific manual trade subcategories, daily/hourly availability markers, and historical client feedback text logs.
+   * **C. Heavy Machinery (Caterpillar/Katbiler) Details Screen:** Emphasizes technical equipment specs. Displays precise machinery models (e.g., CAT 320 Excavator), attachment listings, capacity metrics, and verified machine condition reports.
+   * **Shared Action Feature:** All three screens feature a prominent, fixed bottom action bar housing a high-contrast **"Direct Call"** button. Tapping this button instantly passes the typed provider phone payload to the device's native hardware dialer for immediate contact.
+### 10. Edit Profile Screen
+ * **Details:** The type-safe profile modification workspace allowing users to update their public or account data seamlessly.
+ * **Features:**
+   * Interactive avatar image uploader with direct, secure background chunked encoding pipelines to **AWS S3**.
+   * Strictly typed input fields with live validation for public names, descriptions, and regional location assignments (Governorate/District selections).
+   * An Anime.js-driven floating save button that checks form validity states in real time, glowing smoothly when changes are detected and ready for database updates in **PostgreSQL**.
+## 💻 Admin Web Dashboard Screens (React Web + TypeScript)
+### 1. Centralized Overview & Analytics
+ * **Features:** Displays interactive Three.js 3D data graphs visualizing subscriber registrations across Iraq. Provides primary metric grids for financial tracking across local payment webhooks (FIB, Zain Cash, FastPay).
+### 2. CMS Member & Directory Registry
+ * **Features:** A dense, type-safe data table for searching, filtering, and managing all listed contractors, craftsmen, and heavy machinery owners. Since registration is immediate and self-managed via payment validation, admins use this panel for direct account adjustments or manual suspensions.
+### 3. Review & Quality Moderation Hub
+ * **Features:** Automatically flags low-scoring user reviews (1-2 stars) for operational review. Gives administrators the explicit capability to delete abusive text logs or flag suspicious accounts to protect **4Builder's** marketplace integrity.
